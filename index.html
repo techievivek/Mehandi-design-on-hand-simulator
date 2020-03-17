@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <title>Document</title>
+</head>
+<body>
+<div class="row">
+<div class="col l6">
+<h3 class="teal-text center">Lab Area</h3 class="teal-text center">
+    <div class="center">
+            <form action="#">
+               <div class="row">
+                    <div class="file-field input-field col s9">
+                            <div class="btn">
+                              <span>CHoose Mehandi design</span>
+                              <input type="file" id="imgInp">
+                            </div>
+                            <div class="file-path-wrapper col s3">
+                              <input class="file-path validate" type="text">
+                            </div>
+                          </div>
+               </div>
+                  </form>
+    </div>
+<div class="center">
+        <button id="Download-btn" onclick="download()" class="btn green"> Load Output Image <i class="material-icons right">send</i></button>
+</div>
+<div>
+        <img src="hand.jpeg" class="fishes" onmousedown="return false" style="width:350px;height:450px;position:absolute;
+        top: 280px;
+        left: 200px;
+        z-index: 1;" id="background">
+        <img src="placeholder.png" class="fish" id="sky" width="250" ondragstart="return false;" style="   position: absolute;;
+        top: 520px;
+        left: 250px;
+        z-index: 2;
+        opacity:0.65;">
+</div>
+<div class="center">
+        <form action="#">
+                <p class="range-field">
+                        <input id="mySlider" type="range" min="100" max="500" value="285" step="5" oninput="resizeImage();" style="width:500px;">
+                       </p>
+              </form>
+</div>
+     <!-- <div class="center">
+                    <button type="button" onclick="zoomin()" class="btn teal"> <i class="material-icons left " style="font-size: 1.8rem;">zoom_in</i></button>
+                    <button type="button" onclick="zoomout()" class="btn teal"> <i class="material-icons left " style="font-size: 1.8rem;">zoom_out</i></button>
+
+     </div> -->
+</div>
+<div class="col l6">
+        <h3 class="teal-text">Output Image</h3 class="teal-text center">
+<canvas id="canvas" style="display: none;"></canvas>
+    <button class="btn" id="download_link" style="display: none;">Download Image <i class="material-icons left">image</i></button>
+    <a style="display:none" id="download" download="design.png"></a>
+
+    </div>
+</div>
+<script
+src="https://code.jquery.com/jquery-3.4.1.min.js"
+integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+crossorigin="anonymous"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+   
+  <script>
+      function readURL(input) {
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+    
+    reader.onload = function(e) {
+      $('#sky').attr('src', e.target.result);
+    }
+    
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+$("#imgInp").change(function() {
+  readURL(this);
+});
+        function zoomin(){
+            var myImg = document.getElementById("sky");
+            var currWidth = myImg.clientWidth;
+            if(currWidth == 500){
+                alert("Maximum zoom-in level reached.");
+            } else{
+                myImg.style.width = (currWidth + 10) + "px";
+            } 
+        }
+        function zoomout(){
+            var myImg = document.getElementById("sky");
+            var currWidth = myImg.clientWidth;
+            if(currWidth == 50){
+                alert("Maximum zoom-out level reached.");
+            } else{
+                myImg.style.width = (currWidth - 10) + "px";
+            }
+        }
+        //Drag and drop
+        let gMouseDownX = 0;
+let gMouseDownY = 0;
+let gMouseDownOffsetX = 0;
+let gMouseDownOffsetY = 0;
+
+function addListeners() {
+    document.getElementById('sky').addEventListener('mousedown', mouseDown, false);
+    window.addEventListener('mouseup', mouseUp, false);
+}
+
+function mouseUp() {
+    window.removeEventListener('mousemove', divMove, true);
+}
+
+function mouseDown(e) {
+    gMouseDownX = e.clientX;
+    gMouseDownY = e.clientY;
+
+    var div = document.getElementById('sky');
+
+    //The following block gets the X offset (the difference between where it starts and where it was clicked)
+    let leftPart = "";
+    if(!div.style.left)
+        leftPart+="0px";    //In case this was not defined as 0px explicitly.
+    else
+        leftPart = div.style.left;
+    let leftPos = leftPart.indexOf("px");
+    let leftNumString = leftPart.slice(0, leftPos); // Get the X value of the object.
+    gMouseDownOffsetX = gMouseDownX - parseInt(leftNumString,10);
+
+    //The following block gets the Y offset (the difference between where it starts and where it was clicked)
+    let topPart = "";
+    if(!div.style.top)
+        topPart+="0px";     //In case this was not defined as 0px explicitly.
+    else
+        topPart = div.style.top;
+    let topPos = topPart.indexOf("px");
+    let topNumString = topPart.slice(0, topPos);    // Get the Y value of the object.
+    gMouseDownOffsetY = gMouseDownY - parseInt(topNumString,10);
+
+    window.addEventListener('mousemove', divMove, true);
+}
+
+function divMove(e){
+    var div = document.getElementById('sky');
+    div.style.position = 'absolute';
+    let topAmount = e.clientY - gMouseDownOffsetY;
+    div.style.top = topAmount + 'px';
+    let leftAmount = e.clientX - gMouseDownOffsetX;
+    div.style.left = leftAmount + 'px';
+}
+
+addListeners();
+
+function resizeImage() {
+  var image = document.getElementById('sky'),
+      ranger = document.getElementById('mySlider');
+  image.style.width = (mySlider.value / 1)+'px';
+}
+function download()
+{
+    foreground = document.getElementById('sky')
+    background=document.getElementById('background')
+    var canvas = document.getElementById("canvas");
+    canvas.style.display="inline"
+canvas.height=500
+canvas.width=500
+var ctx = canvas.getContext("2d");
+// top=parseInt(foreground.style.top,10)
+// left=parseInt(foreground.style.left-background.style.left,10)
+foreground.style.top=foreground.style.top
+foreground.style.left=foreground.style.left
+background.style.top=background.style.top
+background.style.left=background.style.left
+ top1=parseInt(background.style.top,10)
+left1=parseInt(background.style.left,10)
+top2=parseInt(foreground.style.top,10)
+left2=parseInt(foreground.style.left,10)
+ctx.drawImage(background, 0, 0,background.width,background.height);
+ctx.drawImage(foreground,left2-left1,top2-top1,foreground.width,foreground.height);
+download_link=document.getElementById("download_link")
+download_link.style.display="inline"
+}
+
+    </script>
+    <script>
+  download_link.addEventListener("click",()=>
+  {
+    var download = document.getElementById("download");
+var image = document.getElementById("canvas").toDataURL("image/png").replace("image/png", "image/octet-stream");
+image.crossOrigin="anonymous"
+download.setAttribute("href", image);
+download.click();
+  })
+
+    </script>
+</body>
+</html>

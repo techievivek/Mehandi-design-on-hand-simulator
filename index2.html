@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="main" height="800px" width="1300px"></canvas>
+    <script>
+var ctx = document.getElementById("main").getContext("2d");
+var background = new Image();
+var photo = new Image();
+var images = [background, photo]; /// the key
+var count = images.length;
+
+background.onload = photo.onload = counter;
+background.src = "hand.png";
+photo.src = "design1.jpeg"
+photo.style.opacity=0.5
+photo.style.zIndex="2px"
+/// common loader keeping track if loads
+function counter() {
+    count--;
+    if (count === 0) drawImages();
+}
+
+/// is called when all images are loaded
+function drawImages() {
+    for(i = 0; i < images.length; i++)
+        ctx.drawImage(images[i], 0, 0);
+}
+
+        </script>
+</body>
+</html>
